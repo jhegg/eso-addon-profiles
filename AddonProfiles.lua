@@ -11,45 +11,64 @@ AddonProfiles = {
 		[1] = {
 			disable = {"HarvensProvisioningTooltips", "Alchemist"},
 		},
-		[2] = {
-			disable = {}
-		}
 	},
+    checkboxes = {}
 }
 
 local AddOnManager = GetAddOnManager()
 
+local function DisableAnyAddonsThatShouldBeDisabled(index)
+    local disabled = {}
+
+    for _,addonName in pairs(AddonProfiles.profiles[index].disable) do
+        AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
+        disabled[addonName] = true
+        d("Disabling addon: "..addonName)
+    end
+
+    return disabled
+end
+
+local function EnableAnyAddonsThatShouldNotBeDisabled(disabled)
+    for addonName,_ in pairs(AddonProfiles.addons) do
+        if not disabled[addonName] then
+            AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, true)
+        end
+    end
+end
+
 local function ActivateProfile(index)
 	if AddonProfiles.profiles[index] then
-		for _,addonName in pairs(AddonProfiles.profiles[index].disable) do
-			AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
-			d("Disabling addon: "..addonName)
-		end
-
-		for _,addonName in pairs(AddonProfiles.profiles[index].enable) do
-			AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, true)
-			d("Enabling addon: "..addonName)
-		end
+        local disabled = DisableAnyAddonsThatShouldBeDisabled(index)
+        EnableAnyAddonsThatShouldNotBeDisabled(disabled)
+        -- todo reloadui call?
+        -- todo keybinding?
+    else
+        d("Profile #"..index.." is not initialized, please configure it in the settings menu")
 	end
-	-- <reloadui call?>
-	-- <keybinding?>
+end
+
+local function PopulateUnsortedAddons()
+    local numberOfAddons = AddOnManager:GetNumAddOns()
+    for i = 1, numberOfAddons do
+        local name, title, _, _, enabled, _, _ = AddOnManager:GetAddOnInfo(i)
+        AddonProfiles.addons[name] = {name=name, title=title, enabled=enabled, index=i}
+    end
+end
+
+local function PopulateSortedAddonIndex()
+    for name,_ in pairs(AddonProfiles.addons) do
+        AddonProfiles.addonTitleSortIndexes[#AddonProfiles.addonTitleSortIndexes+1] = name
+    end
+
+    table.sort(AddonProfiles.addonTitleSortIndexes, function (a, b)
+        return string.lower(AddonProfiles.addons[a].title) < string.lower(AddonProfiles.addons[b].title)
+    end)
 end
 
 local function PopulateAddonList()
-	local numberOfAddons = AddOnManager:GetNumAddOns()
-	local unsortedTable = {}
-	for i = 1, numberOfAddons do
-		local name, title, author, description, enabled, state, isOutOfDate = AddOnManager:GetAddOnInfo(i)
-		AddonProfiles.addons[name] = {name=name, title=title, enabled=enabled, index=i}
-	end
-
-	for name,value in pairs(AddonProfiles.addons) do
-		AddonProfiles.addonTitleSortIndexes[#AddonProfiles.addonTitleSortIndexes+1] = name
-	end
-
-	table.sort(AddonProfiles.addonTitleSortIndexes, function (a, b)
-		return string.lower(AddonProfiles.addons[a].title) < string.lower(AddonProfiles.addons[b].title)
-	end)
+    PopulateUnsortedAddons()
+    PopulateSortedAddonIndex()
 end
 
 local function GetAddonIndexKeyAndDisabledState(addonName)
@@ -83,7 +102,7 @@ local function BuildAddonMenu()
 	local sortIndexes = AddonProfiles.addonTitleSortIndexes
 	for i=1, #sortIndexes do
 		local addonName = AddonProfiles.addons[sortIndexes[i]].name
-		LAM:AddCheckbox(panelId,
+		local checkbox = LAM:AddCheckbox(panelId,
 			AddonProfiles.name..i.."Checkbox",
 			AddonProfiles.addons[sortIndexes[i]].title,
 			nil,
@@ -102,16 +121,15 @@ local function BuildAddonMenu()
 				end
 			end
 		)
+        AddonProfiles.checkboxes[#AddonProfiles.checkboxes+1] = {checkbox}
 	end
 end
 
-local function onLoad(event, name)
+local function onLoad(_, name)
     if name ~= AddonProfiles.name then return end
     EVENT_MANAGER:UnregisterForEvent(AddonProfiles.name, EVENT_ADD_ON_LOADED);
-
 	PopulateAddonList()
-
-	--BuildAddonMenu()
+	BuildAddonMenu()
 
 	SLASH_COMMANDS["/addonprofiles"] = function (args)
 		if args == "show" then BuildAddonMenu() end
