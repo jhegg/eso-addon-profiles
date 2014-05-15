@@ -5,6 +5,7 @@ AddonProfiles = {
 	addonTitleSortIndexes = {},
     selectedProfileNumber = 1,
     checkboxes = {},
+    settingsHeader
 }
 
 local AddOnManager = GetAddOnManager()
@@ -104,11 +105,12 @@ local function BuildAddonMenu()
                 button:SetState(not disabled and 1 or 0)
                 button:toggleFunction(not disabled)
             end
+
+            AddonProfiles.settingsHeader:GetNamedChild("Label"):SetText("Editing Profile #"..GetCurrentProfileNumber())
 		end
 	)
 
-	-- todo update the profile number when slider changes
-    LAM:AddHeader(panelId, AddonProfiles.name.."ProfileHeader", "Editing Profile #"..GetCurrentProfileNumber())
+    AddonProfiles.settingsHeader = LAM:AddHeader(panelId, AddonProfiles.name.."ProfileHeader", "Editing Profile #"..GetCurrentProfileNumber())
 
 	local sortIndexes = AddonProfiles.addonTitleSortIndexes
 	for i=1, #sortIndexes do
