@@ -6,26 +6,22 @@ AddonProfiles = {
     },
 	addons = {},
 	addonTitleSortIndexes = {},
-	sliderValue = 1,
-	profiles = {
-		[1] = {
-			disable = {"HarvensProvisioningTooltips", "Alchemist"},
-		},
-	},
-    checkboxes = {}
+    selectedProfileNumber = 1,
+	profiles = {},
+    checkboxes = {},
+    buttons = {}
 }
 
 local AddOnManager = GetAddOnManager()
 
+local function GetCurrentProfileNumber() return AddonProfiles.selectedProfileNumber end
+
 local function DisableAnyAddonsThatShouldBeDisabled(index)
     local disabled = {}
-
     for _,addonName in pairs(AddonProfiles.profiles[index].disable) do
         AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
         disabled[addonName] = true
-        d("Disabling addon: "..addonName)
     end
-
     return disabled
 end
 
@@ -74,7 +70,7 @@ end
 local function GetAddonIndexKeyAndDisabledState(addonName)
 	local disabled = false
 	local keyIndex
-	for k,v in pairs(AddonProfiles.profiles[1].disable) do
+	for k,v in pairs(AddonProfiles.profiles[GetCurrentProfileNumber()].disable) do
 		if v == addonName then
 			disabled = true
 			keyIndex = k
@@ -90,14 +86,34 @@ local function BuildAddonMenu()
     LAM:AddHeader(panelId, AddonProfiles.name.."ControlPanelHeader", "By Marihk")
 
 	LAM:AddSlider(panelId, AddonProfiles.name.."Slider", "Profile to edit:", nil, 1, 5, 1,
-		function() return AddonProfiles.sliderValue end,
+		function() return AddonProfiles.selectedProfileNumber end,
 		function(value)
-			AddonProfiles.sliderValue = value
-			-- todo update checkbox states to reflect changed profile
+			AddonProfiles.selectedProfileNumber = value
+
+            if AddonProfiles.profiles[value] == nil then
+                AddonProfiles.profiles[value] = { disable = {} }
+            end
+
+            for _,checkbox in pairs(AddonProfiles.checkboxes) do
+                local addonName = checkbox.addonName
+                local disabled = false
+                if AddonProfiles.profiles[value] ~= nil and AddonProfiles.profiles[value].disable ~= nil then
+                    for k,v in pairs(AddonProfiles.profiles[value].disable) do
+                        if v == addonName then
+                            disabled = true
+                            break
+                        end
+                    end
+                end
+                local button = checkbox:GetNamedChild("Checkbox")
+                button:SetState(not disabled and 1 or 0)
+                button:toggleFunction(not disabled)
+            end
 		end
 	)
 
-	LAM:AddHeader(panelId, AddonProfiles.name.."ProfileHeader", "Editing Profile #"..1)
+	-- todo update the profile number when slider changes
+    LAM:AddHeader(panelId, AddonProfiles.name.."ProfileHeader", "Editing Profile #"..GetCurrentProfileNumber())
 
 	local sortIndexes = AddonProfiles.addonTitleSortIndexes
 	for i=1, #sortIndexes do
@@ -113,22 +129,30 @@ local function BuildAddonMenu()
 			function()
 				local keyIndex, disabled = GetAddonIndexKeyAndDisabledState(addonName)
 				if disabled then
-					-- remove the entry from 'disable'
-					AddonProfiles.profiles[1].disable[keyIndex] = nil
+					-- remove the entry from 'disable' to enable it
+					AddonProfiles.profiles[GetCurrentProfileNumber()].disable[keyIndex] = nil
 				else
-					-- add the entry to 'disable'
-					AddonProfiles.profiles[1].disable[#AddonProfiles.profiles[1].disable+1] = addonName
+					-- it was enabled, so add the entry to 'disable' it
+                    AddonProfiles.profiles[GetCurrentProfileNumber()].disable[#AddonProfiles.profiles[GetCurrentProfileNumber()].disable+1] = addonName
 				end
 			end
 		)
-        AddonProfiles.checkboxes[#AddonProfiles.checkboxes+1] = {checkbox}
+        checkbox.addonName = addonName
+        AddonProfiles.checkboxes[#AddonProfiles.checkboxes+1] = checkbox
 	end
+end
+
+local function InitializeFirstProfileIfUnset()
+    if AddonProfiles.profiles[1] == nil then
+        AddonProfiles.profiles[1] = { disable = {} }
+    end
 end
 
 local function onLoad(_, name)
     if name ~= AddonProfiles.name then return end
     EVENT_MANAGER:UnregisterForEvent(AddonProfiles.name, EVENT_ADD_ON_LOADED);
-	PopulateAddonList()
+	InitializeFirstProfileIfUnset()
+    PopulateAddonList()
 	BuildAddonMenu()
 
 	SLASH_COMMANDS["/addonprofiles"] = function (args)
