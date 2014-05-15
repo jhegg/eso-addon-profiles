@@ -37,7 +37,7 @@ local function ActivateProfile(index)
 	if AddonProfiles.profiles[index] then
         local disabled = DisableAnyAddonsThatShouldBeDisabled(index)
         EnableAnyAddonsThatShouldNotBeDisabled(disabled)
-        -- todo reloadui call?
+        ReloadUI("ingame")
         -- todo keybinding?
     else
         d("Profile #"..index.." is not initialized, please configure it in the settings menu")
