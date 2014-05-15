@@ -1,15 +1,10 @@
 AddonProfiles = {
     name = "AddonProfiles",
     savedVariables,
-    defaultSavedVariables = {
-		-- todo put something here
-    },
 	addons = {},
 	addonTitleSortIndexes = {},
     selectedProfileNumber = 1,
-	profiles = {},
     checkboxes = {},
-    buttons = {}
 }
 
 local AddOnManager = GetAddOnManager()
@@ -18,7 +13,7 @@ local function GetCurrentProfileNumber() return AddonProfiles.selectedProfileNum
 
 local function DisableAnyAddonsThatShouldBeDisabled(index)
     local disabled = {}
-    for _,addonName in pairs(AddonProfiles.profiles[index].disable) do
+    for _,addonName in pairs(AddonProfiles.savedVariables[index].disable) do
         AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
         disabled[addonName] = true
     end
@@ -34,7 +29,7 @@ local function EnableAnyAddonsThatShouldNotBeDisabled(disabled)
 end
 
 local function ActivateProfile(index)
-	if AddonProfiles.profiles[index] then
+	if AddonProfiles.savedVariables[index] then
         local disabled = DisableAnyAddonsThatShouldBeDisabled(index)
         EnableAnyAddonsThatShouldNotBeDisabled(disabled)
         ReloadUI("ingame")
@@ -70,7 +65,7 @@ end
 local function GetAddonIndexKeyAndDisabledState(addonName)
 	local disabled = false
 	local keyIndex
-	for k,v in pairs(AddonProfiles.profiles[GetCurrentProfileNumber()].disable) do
+	for k,v in pairs(AddonProfiles.savedVariables[GetCurrentProfileNumber()].disable) do
 		if v == addonName then
 			disabled = true
 			keyIndex = k
@@ -90,15 +85,15 @@ local function BuildAddonMenu()
 		function(value)
 			AddonProfiles.selectedProfileNumber = value
 
-            if AddonProfiles.profiles[value] == nil then
-                AddonProfiles.profiles[value] = { disable = {} }
+            if AddonProfiles.savedVariables[value] == nil then
+                AddonProfiles.savedVariables[value] = { disable = {} }
             end
 
             for _,checkbox in pairs(AddonProfiles.checkboxes) do
                 local addonName = checkbox.addonName
                 local disabled = false
-                if AddonProfiles.profiles[value] ~= nil and AddonProfiles.profiles[value].disable ~= nil then
-                    for k,v in pairs(AddonProfiles.profiles[value].disable) do
+                if AddonProfiles.savedVariables[value] ~= nil and AddonProfiles.savedVariables[value].disable ~= nil then
+                    for _,v in pairs(AddonProfiles.savedVariables[value].disable) do
                         if v == addonName then
                             disabled = true
                             break
@@ -130,10 +125,10 @@ local function BuildAddonMenu()
 				local keyIndex, disabled = GetAddonIndexKeyAndDisabledState(addonName)
 				if disabled then
 					-- remove the entry from 'disable' to enable it
-					AddonProfiles.profiles[GetCurrentProfileNumber()].disable[keyIndex] = nil
+					AddonProfiles.savedVariables[GetCurrentProfileNumber()].disable[keyIndex] = nil
 				else
 					-- it was enabled, so add the entry to 'disable' it
-                    AddonProfiles.profiles[GetCurrentProfileNumber()].disable[#AddonProfiles.profiles[GetCurrentProfileNumber()].disable+1] = addonName
+                    AddonProfiles.savedVariables[GetCurrentProfileNumber()].disable[#AddonProfiles.savedVariables[GetCurrentProfileNumber()].disable+1] = addonName
 				end
 			end
 		)
@@ -143,21 +138,24 @@ local function BuildAddonMenu()
 end
 
 local function InitializeFirstProfileIfUnset()
-    if AddonProfiles.profiles[1] == nil then
-        AddonProfiles.profiles[1] = { disable = {} }
+    if AddonProfiles.savedVariables[1] == nil then
+        AddonProfiles.savedVariables[1] = { disable = {} }
     end
+end
+
+local function InitializeSavedVariables()
+    AddonProfiles.savedVariables = ZO_SavedVars:NewAccountWide("AddonProfiles_SavedVariables", 1, nil)
 end
 
 local function onLoad(_, name)
     if name ~= AddonProfiles.name then return end
     EVENT_MANAGER:UnregisterForEvent(AddonProfiles.name, EVENT_ADD_ON_LOADED);
-	InitializeFirstProfileIfUnset()
+    InitializeSavedVariables()
+    InitializeFirstProfileIfUnset()
     PopulateAddonList()
 	BuildAddonMenu()
 
 	SLASH_COMMANDS["/addonprofiles"] = function (args)
-		if args == "show" then BuildAddonMenu() end
-
 		local profileNumber = tonumber(args)
 		if profileNumber and profileNumber > 0 and profileNumber < 6 then
 			ActivateProfile(profileNumber)
