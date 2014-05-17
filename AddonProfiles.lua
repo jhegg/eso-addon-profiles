@@ -15,8 +15,10 @@ local function GetCurrentProfileNumber() return AddonProfiles.selectedProfileNum
 local function DisableAnyAddonsThatShouldBeDisabled(index)
     local disabled = {}
     for _,addonName in pairs(AddonProfiles.savedVariables[index].disable) do
-        AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
-        disabled[addonName] = true
+        if AddonProfiles.addons[addonName] then
+            AddOnManager:SetAddOnEnabled(AddonProfiles.addons[addonName].index, false)
+            disabled[addonName] = true
+        end
     end
     return disabled
 end
