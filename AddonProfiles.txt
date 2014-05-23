@@ -1,8 +1,8 @@
 ## Title: Addon Profiles
-## APIVersion: 100003
-## Version: 1.0.1
+## APIVersion: 100004
+## Version: 1.0.2
 ## Author: Marihk
-## Description:  v1.0.1 - Allows you to setup profiles that consist of enabled/disabled Addons, to quickly switch between them
+## Description:  v1.0.2 - Allows you to setup profiles that consist of enabled/disabled Addons, to quickly switch between them
 ## SavedVariables: AddonProfiles_SavedVariables
 ## OptionalDependsOn: LibAddonMenu-1.0 LibStub
 

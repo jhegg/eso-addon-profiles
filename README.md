@@ -1,4 +1,4 @@
-Addon Profiles - v1.0.1
+Addon Profiles - v1.0.2
 ==================
 
 An Elder Scrolls Online addon that allows you to use profiles to change which addons should currently be enabled.
@@ -21,7 +21,7 @@ The addon should theoretically work with non-English game clients, but it has no
 ## Where can I download official releases of this addon?
 
 * [ESOUI](http://www.esoui.com/downloads/info477-AddonProfiles.html)
-* [Curse](http://teso.curseforge.com/teso-addons/addon-profiles/)
+* [Curse](http://www.curse.com/teso-addons/teso/addon-profiles/)
 * [GitHub (development site)](https://github.com/jhegg/eso-addon-profiles/)
 
 ## Where should I file bugs?
