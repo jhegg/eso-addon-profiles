@@ -1,4 +1,4 @@
-Addon Profiles - v1.0.2
+Addon Profiles - v1.0.3
 ==================
 
 An Elder Scrolls Online addon that allows you to use profiles to change which addons should currently be enabled.
@@ -27,3 +27,9 @@ The addon should theoretically work with non-English game clients, but it has no
 ## Where should I file bugs?
 
 If you have any problems with this addon, please either leave a comment at the ESOUI page, or feel free to file a bug on the [GitHub issues page](https://github.com/jhegg/eso-addon-profiles/issues).
+
+## Disclaimer
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+States and/or other countries. All rights reserved.
