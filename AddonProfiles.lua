@@ -36,7 +36,6 @@ local function ActivateProfile(index)
         local disabled = DisableAnyAddonsThatShouldBeDisabled(index)
         EnableAnyAddonsThatShouldNotBeDisabled(disabled)
         ReloadUI("ingame")
-        -- todo keybinding?
     else
         d("Profile #"..index.." is not initialized, please configure it in the settings menu")
 	end
@@ -172,3 +171,13 @@ local function onLoad(_, name)
 end
 
 EVENT_MANAGER:RegisterForEvent(AddonProfiles.name, EVENT_ADD_ON_LOADED, onLoad)
+
+ZO_CreateStringId("SI_BINDING_NAME_SWITCH_TO_PROFILE_ONE", "Switch to Profile One")
+ZO_CreateStringId("SI_BINDING_NAME_SWITCH_TO_PROFILE_TWO", "Switch to Profile Two")
+ZO_CreateStringId("SI_BINDING_NAME_SWITCH_TO_PROFILE_THREE", "Switch to Profile Three")
+ZO_CreateStringId("SI_BINDING_NAME_SWITCH_TO_PROFILE_FOUR", "Switch to Profile Four")
+ZO_CreateStringId("SI_BINDING_NAME_SWITCH_TO_PROFILE_FIVE", "Switch to Profile Five")
+
+function AddonProfiles.SwitchToProfile(profileNumber)
+    ActivateProfile(profileNumber)
+end

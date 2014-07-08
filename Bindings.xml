@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Addon Profiles">
+            <Action name="SWITCH_TO_PROFILE_ONE">
+                <Down>AddonProfiles.SwitchToProfile(1)</Down>
+            </Action>
+            <Action name="SWITCH_TO_PROFILE_TWO">
+                <Down>AddonProfiles.SwitchToProfile(2)</Down>
+            </Action>
+            <Action name="SWITCH_TO_PROFILE_THREE">
+                <Down>AddonProfiles.SwitchToProfile(3)</Down>
+            </Action>
+            <Action name="SWITCH_TO_PROFILE_FOUR">
+                <Down>AddonProfiles.SwitchToProfile(4)</Down>
+            </Action>
+            <Action name="SWITCH_TO_PROFILE_FIVE">
+                <Down>AddonProfiles.SwitchToProfile(5)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

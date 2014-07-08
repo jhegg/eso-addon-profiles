@@ -1,4 +1,4 @@
-Addon Profiles - v1.0.3
+Addon Profiles - v1.1.0
 ==================
 
 An Elder Scrolls Online addon that allows you to use profiles to change which addons should currently be enabled.
@@ -7,7 +7,9 @@ An Elder Scrolls Online addon that allows you to use profiles to change which ad
 
 It provides a settings menu section with a slider bar that represents 5 possible profiles. Each profile displays the list of installed addons with an on/off button, allowing you to specify whether the addon should be enabled or disabled. You can then use the slash command '/addonprofiles #' (where # is the profile number 1 through 5), and the specified addons will be disabled/enabled and your UI will be reloaded, causing the changes to take effect.
 
-By using account-wide SavedVariables, your addon profiles will be the same across all characters. So, you might setup profiles combat/questing, and profiles for crafting, and profiles for addons that you're just trying out. You can then easily switch to a new addon profile while in game, without having to remember which specific mods should be turned on or off. 
+By using account-wide SavedVariables, your addon profiles will be the same across all characters. So, you might setup profiles combat/questing, and profiles for crafting, and profiles for addons that you're just trying out. You can then easily switch to a new addon profile while in game, without having to remember which specific mods should be turned on or off.
+ 
+You can also use a keybinding for each profile, for faster switching.
 
 ## Language Support
 
