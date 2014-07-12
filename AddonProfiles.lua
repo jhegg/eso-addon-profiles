@@ -5,7 +5,8 @@ AddonProfiles = {
 	addonTitleSortIndexes = {},
     selectedProfileNumber = 1,
     checkboxes = {},
-    settingsHeader
+    settingsHeader,
+    profileName
 }
 
 local AddOnManager = GetAddOnManager()
@@ -108,8 +109,23 @@ local function BuildAddonMenu()
             end
 
             AddonProfiles.settingsHeader:GetNamedChild("Label"):SetText("Editing Profile #"..GetCurrentProfileNumber())
+            AddonProfiles.profileName:GetNamedChild("Edit"):SetText(AddonProfiles.savedVariables[GetCurrentProfileNumber()].name)
 		end
 	)
+
+    AddonProfiles.profileName = LAM:AddEditBox(panelId,
+        AddonProfiles.name.."ProfileCustomName",
+        "Profile Name",
+        "",
+        false,
+        function()
+            return AddonProfiles.savedVariables[GetCurrentProfileNumber()].name
+        end,
+        function(text)
+            AddonProfiles.savedVariables[GetCurrentProfileNumber()].name = text
+        end,
+        nil,
+        nil)
 
     AddonProfiles.settingsHeader = LAM:AddHeader(panelId, AddonProfiles.name.."ProfileHeader", "Editing Profile #"..GetCurrentProfileNumber())
 

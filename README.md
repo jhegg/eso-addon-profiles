@@ -1,4 +1,4 @@
-Addon Profiles - v1.1.0
+Addon Profiles - v1.1.1
 ==================
 
 An Elder Scrolls Online addon that allows you to use profiles to change which addons should currently be enabled.
