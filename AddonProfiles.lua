@@ -175,14 +175,28 @@ local function onLoad(_, name)
 	BuildAddonMenu()
 
 	SLASH_COMMANDS["/addonprofiles"] = function (args)
+        if #args == 0 or args == "help" then
+            d("Addon Profiles: /addonprofiles #, where # is a profile number from 1 to 5")
+        end
+
 		local profileNumber = tonumber(args)
 		if profileNumber and profileNumber > 0 and profileNumber < 6 then
 			ActivateProfile(profileNumber)
+            return
+        elseif profileNumber ~= nil then
+            d("Addon Profiles: Invalid profile number specified: "..profileNumber)
+            return
 		end
 
-		if #args == 0 or args == "help" then
-			d("Addon Profiles: /addonprofiles #, where # is a profile number from 1 to 5")
-		end
+        local profileName = args
+        for i = 1, 5 do
+            if AddonProfiles.savedVariables[i].name == profileName then
+                ActivateProfile(i)
+                return
+            end
+        end
+
+        d("Addon Profiles: invalid profile name or number specified: "..args)
 	end
 end
 
